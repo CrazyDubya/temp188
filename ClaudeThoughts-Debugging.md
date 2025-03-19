@@ -51,3 +51,36 @@
 25. Request Best Practices: Ask about best practices in coding or architecture that could help avoid similar issues.
 
 By following these guidelines, you can effectively leverage Claude's capabilities to debug issues, understand root causes, and improve overall code quality and reliability.
+# ClaudeThoughts: Debugging with Claude
+
+1. Describe the Issue: Clearly explain the problem, including any error messages or unexpected behavior.
+
+2. Provide Context: Share relevant code snippets, including the surrounding context where the issue occurs.
+
+3. Specify Environment: Detail your development environment, including OS, language version, and relevant libraries.
+
+4. Share Error Logs: If available, provide full error messages, stack traces, or relevant log outputs.
+
+5. Explain Expected Behavior: Clearly state what the code should do when working correctly.
+
+6. Detail Debugging Steps: Describe what you've already tried to solve the issue.
+
+7. Use Code Blocks: When sharing code or error messages, use markdown code blocks for clarity.
+
+8. Provide Input and Output Examples: Share sample inputs that trigger the bug and the corresponding outputs.
+
+9. Isolate the Problem: Try to narrow down the issue to the smallest possible code snippet that reproduces the bug.
+
+10. Ask for Step-by-Step Analysis: Request a systematic approach to identifying and fixing the issue.
+
+11. Seek Root Cause Explanations: Ask for explanations of why the bug is occurring, not just how to fix it.
+
+12. Discuss Edge Cases: Consider and ask about potential edge cases or unusual inputs that might be causing the issue.
+
+13. Request Debugging Strategies: Ask for general debugging strategies that could be applied to similar problems in the future.
+
+14. Inquire About Debugging Tools: Seek advice on debugging tools or techniques specific to your language or framework.
+
+15. Ask for Log Analysis: If logs are available, request help interpreting them or suggestions for additional logging.
+
+By following these guidelines, you can effectively leverage Claude's capabilities to debug issues, understand root causes, and improve overall code quality and reliability.
