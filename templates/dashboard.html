@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConflOst - Signature Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(125deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            overflow-x: hidden;
+            color: #1a1a2e;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating orbs in background */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            top: -200px;
+            left: -200px;
+            animation-duration: 25s;
+        }
+
+        .orb2 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,100,255,0.6) 0%, rgba(255,100,255,0) 70%);
+            bottom: -150px;
+            right: -150px;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+
+        .orb3 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(100,255,255,0.5) 0%, rgba(100,255,255,0) 70%);
+            top: 50%;
+            right: 10%;
+            animation-duration: 35s;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(100px, -100px) scale(1.1); }
+            50% { transform: translate(-50px, 50px) scale(0.9); }
+            75% { transform: translate(50px, 100px) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header with organic glass shape */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .header-blob {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            padding: 2rem 1.5rem;
+            box-shadow: 
+                0 8px 32px rgba(31, 38, 135, 0.2),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3);
+            animation: morphing 8s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-blob::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        @keyframes morphing {
+            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+            25% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
+            50% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+            75% { border-radius: 30% 70% 30% 70% / 70% 30% 70% 30%; }
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(26, 26, 46, 0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        nav {
+            margin-bottom: 2rem;
+        }
+
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(31, 38, 135, 0.1);
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #1a1a2e;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .nav-item:hover::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31, 38, 135, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Content sections */
+        .section {
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 
+                0 8px 32px rgba(31, 38, 135, 0.15),
+                inset 0 1px 2px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.1) 100%);
+            border-radius: 2rem;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .glass-card:hover::after {
+            opacity: 1;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #1a1a2e;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 80%;
+            background: linear-gradient(to bottom, #667eea, #f093fb);
+            border-radius: 3px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-blob {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40% 60% 60% 40% / 60% 40% 60% 40%;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .stat-blob:hover {
+            transform: scale(1.05) rotate(2deg);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px rgba(31, 38, 135, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .file-table {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .file-row {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-row:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .file-row td {
+            padding: 1rem;
+            border: none;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-never { background: rgba(108, 117, 125, 0.2); color: #6c757d; }
+        .status-partial { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .status-complete { background: rgba(25, 135, 84, 0.2); color: #198754; }
+
+        .upload-section {
+            margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .header-blob { padding: 1.5rem 1rem; }
+            .glass-card { padding: 1.5rem; }
+            .nav-glass { padding: 0.75rem; gap: 0.5rem; }
+            .nav-item { padding: 0.5rem 1rem; font-size: 0.8rem; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        }
+
+        /* Toast styling */
+        .toast {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating background orbs -->
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+
+    <div class="container">
+        <header>
+            <div class="header-blob">
+                <h1>ConflOst Dashboard</h1>
+                <p class="subtitle">Signature Extraction & Voter Matching System</p>
+            </div>
+        </header>
+
+        <nav>
+            <div class="nav-glass">
+                <button id="upload-btn" class="nav-item">📤 Upload File</button>
+                <button id="refresh-btn" class="nav-item">🔄 Refresh</button>
+                <a href="/search" class="nav-item">🔍 Search Voters</a>
+            </div>
+        </nav>
+
+        <main>
+            <section class="section">
+                <div class="glass-card">
+                    <h2>System Overview</h2>
+                    <div id="summary-stats" class="stats-grid">
+                        <!-- Stats will be populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="glass-card">
+                    <h2>File Management</h2>
+                    <div class="file-table">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: rgba(255, 255, 255, 0.1);">
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">File Name</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Status</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Progress</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-list">
+                                <!-- File rows will be populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File Upload Section (hidden by default) -->
+            <section id="upload-section" class="section upload-section" style="display:none;">
+                <div class="glass-card">
+                    <h2>Upload New File</h2>
+                    <form id="upload-form" enctype="multipart/form-data">
+                        <div style="margin-bottom: 1rem;">
+                            <label for="fileInput" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Select file:</label>
+                            <input type="file" id="fileInput" name="file" required style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; background: rgba(255, 255, 255, 0.1); color: #1a1a2e;">
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label for="categories" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Categories (comma separated):</label>
+                            <input type="text" id="categories" name="categories" style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; background: rgba(255, 255, 255, 0.1); color: #1a1a2e;">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="nav-item" style="background: rgba(25, 135, 84, 0.2); border: 1px solid rgba(25, 135, 84, 0.3);">Upload</button>
+                            <button type="button" id="cancel-upload" class="nav-item">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast for notifications -->
+    <div style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1000;">
+        <div id="toast-notif" class="toast" style="display: none;">
+            <div style="padding: 1rem;">
+                <div id="toast-body">
+                    <!-- Notification message -->
+                </div>
+                <button type="button" onclick="hideToast()" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; color: #1a1a2e; font-size: 1.2rem; cursor: pointer;">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard JS -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script>
+        function showToast(message) {
+            document.getElementById('toast-body').textContent = message;
+            document.getElementById('toast-notif').style.display = 'block';
+            setTimeout(hideToast, 3000);
+        }
+        
+        function hideToast() {
+            document.getElementById('toast-notif').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

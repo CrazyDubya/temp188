@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSV Search</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- d3-dsv for CSV parsing -->
+  <script src="https://d3js.org/d3-dsv.v2.min.js"></script>
+  <!-- Fuse.js for fuzzy search -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.min.js"></script>
+  <!-- Lodash for debounce -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+  <style>
+    /* Red, white, blue theme styling */
+    .gradient-header {
+      background: linear-gradient(90deg, #dc2626, #ffffff, #2563eb);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .drag-area {
+      border: 2px dashed #93c5fd;
+      transition: all 0.3s ease;
+    }
+    .drag-area.dragover {
+      border-color: #2563eb;
+      background-color: rgba(37, 99, 235, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="container mx-auto px-4 py-10">
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <h1 class="text-5xl font-extrabold gradient-header">CSV Search</h1>
+      <p class="mt-2 text-blue-700 font-medium">
+        Upload your CSV file below and search records across all fields.
+      </p>
+    </div>
+
+    <!-- File Upload Area -->
+    <div id="dragArea" class="drag-area bg-white rounded-xl p-10 mb-10 shadow-lg cursor-pointer transition-colors text-center">
+      <input type="file" id="fileInput" accept=".csv" class="hidden" />
+      <div class="flex flex-col items-center text-blue-600">
+        <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+        </svg>
+        <p id="fileStatus" class="text-lg">
+          Drag &amp; drop your CSV file here or click to select a file
+        </p>
+      </div>
+    </div>
+
+    <!-- Filter Controls -->
+    <div id="filterContainer" class="mb-6 hidden">
+      <h2 class="text-xl font-semibold text-blue-800 mb-2">Filters</h2>
+      <div id="filters" class="flex flex-wrap gap-4">
+        <!-- Dropdowns will be added here dynamically -->
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="bg-white rounded-full shadow-lg mb-6 px-6 py-4 flex items-center">
+      <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input type="text" id="searchInput"
+             class="w-full focus:outline-none text-lg text-blue-900 placeholder-blue-400"
+             placeholder="Search records..." disabled />
+    </div>
+
+    <!-- Results Area -->
+    <div id="resultsArea" class="mb-10 hidden">
+      <h2 class="text-2xl font-bold mb-4 text-blue-800">Search Results</h2>
+      <div id="resultsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <!-- Pagination Controls -->
+      <div id="pagination" class="mt-4 flex justify-between items-center">
+        <button id="prevBtn" class="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50" disabled>
+          Previous
+        </button>
+        <span id="pageInfo" class="text-blue-700"></span>
+        <button id="nextBtn" class="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50" disabled>
+          Next
+        </button>
+      </div>
+      <div id="resultCount" class="mt-4 text-right text-sm text-blue-700"></div>
+    </div>
+  </div>
+
+  <script>
+    let csvData = [];
+    let columns = [];
+    let fuse = null;
+    let currentResults = [];
+    let currentPage = 1;
+    const resultsPerPage = 25;
+    // Fields to suppress if empty in cards
+    const suppressedFields = [
+      "MailingAddress1", "MailingAddress2", "MailingAddress3", "MailingAddress4",
+      "AbsenteeAddress1", "AbsenteeAddress2", "AbsenteeAddress3", "AbsenteeAddress4"
+    ];
+    // Fields to use as filter dropdowns
+    const filterFields = [
+      "RegZipCode", "AssemblyDistrict", "ElectionDistrict", "CongressionalDistrict",
+      "CouncilDistrict", "SenateDistrict", "CivilCourtDistrict", "JudicialDistrict",
+      "StatusCode", "PoliticalParty", "VoterType"
+    ];
+
+    // DOM Elements
+    const dragArea = document.getElementById('dragArea');
+    const fileInput = document.getElementById('fileInput');
+    const searchInput = document.getElementById('searchInput');
+    const fileStatus = document.getElementById('fileStatus');
+    const resultsArea = document.getElementById('resultsArea');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const resultCount = document.getElementById('resultCount');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageInfo = document.getElementById('pageInfo');
+    const filterContainer = document.getElementById('filterContainer');
+    const filtersDiv = document.getElementById('filters');
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dragArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+
+    // Highlight drag area when file is over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dragArea.addEventListener(eventName, () => dragArea.classList.add('dragover'));
+    });
+    // Remove highlight on dragleave/drop
+    ['dragleave', 'drop'].forEach(eventName => {
+      dragArea.addEventListener(eventName, () => dragArea.classList.remove('dragover'));
+    });
+
+    // Handle file drop
+    dragArea.addEventListener('drop', (e) => {
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.toLowerCase().endsWith('.csv')) {
+        processFile(file);
+      } else {
+        fileStatus.textContent = 'Please upload a valid CSV file.';
+      }
+    });
+
+    // Open file dialog on click
+    dragArea.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) processFile(file);
+    });
+
+    // Process the CSV file using d3-dsv
+    function processFile(file) {
+      // Reset previous data
+      csvData = [];
+      fileStatus.textContent = 'Processing file...';
+      searchInput.disabled = true;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const csvText = e.target.result;
+          csvData = d3.csvParse(csvText);
+          if (csvData.length === 0) {
+            fileStatus.textContent = 'No records found in the CSV.';
+            return;
+          }
+          // Determine columns from the first row
+          columns = Object.keys(csvData[0] || {});
+          // Initialize Fuse.js for fuzzy search across all columns
+          fuse = new Fuse(csvData, {
+            keys: columns,
+            threshold: 0.4,
+            distance: 100
+          });
+          fileStatus.textContent = `Loaded ${csvData.length} rows successfully.`;
+          searchInput.disabled = false;
+          resultsArea.classList.remove('hidden');
+          // Build filter dropdowns dynamically for each filter field (if the column exists)
+          buildFilters();
+          // Set currentResults to all data initially and show first page
+          currentResults = csvData;
+          currentPage = 1;
+          displayResults();
+        } catch (error) {
+          console.error("CSV parse error:", error);
+          fileStatus.textContent = 'Error parsing CSV: ' + error.message;
+        }
+      };
+      reader.onerror = function(error) {
+        fileStatus.textContent = 'Error reading file: ' + error.message;
+      };
+      reader.readAsText(file);
+    }
+
+    // Build dropdown filters dynamically
+    function buildFilters() {
+      // Clear previous filters, if any
+      filtersDiv.innerHTML = "";
+      // For each desired field, if it exists in the data, build a select element.
+      filterFields.forEach(field => {
+        if (!columns.includes(field)) return;
+        // Get unique values for this field (ignoring empty strings)
+        const uniqueVals = Array.from(new Set(csvData.map(d => String(d[field]).trim()).filter(v => v !== "")))
+                                .sort((a, b) => a.localeCompare(b));
+        // Create a select element
+        const select = document.createElement('select');
+        select.id = `filter-${field}`;
+        select.className = "border border-blue-300 rounded p-1";
+        // Default option is "All"
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "All";
+        defaultOption.textContent = field + " (All)";
+        select.appendChild(defaultOption);
+        // Add an option for each unique value
+        uniqueVals.forEach(val => {
+          const opt = document.createElement('option');
+          opt.value = val;
+          opt.textContent = val;
+          select.appendChild(opt);
+        });
+        // When changed, update results
+        select.addEventListener('change', updateResults);
+        // Wrap in a container with a label
+        const wrapper = document.createElement('div');
+        wrapper.className = "flex flex-col";
+        const label = document.createElement('label');
+        label.htmlFor = select.id;
+        label.className = "text-blue-800 text-sm font-medium";
+        label.textContent = field;
+        wrapper.appendChild(label);
+        wrapper.appendChild(select);
+        filtersDiv.appendChild(wrapper);
+      });
+      // Show filter container now that filters are built
+      filterContainer.classList.remove('hidden');
+    }
+
+    // Update results based on search term and filter selections
+    function updateResults() {
+      const term = searchInput.value.trim();
+      let filtered = term === "" ? csvData : fuse.search(term).map(r => r.item);
+
+      // Apply each filter dropdown constraint
+      filterFields.forEach(field => {
+        // Only apply if the field exists
+        if (!columns.includes(field)) return;
+        const select = document.getElementById(`filter-${field}`);
+        if (select && select.value !== "All") {
+          filtered = filtered.filter(record => {
+            // Compare trimmed strings
+            return String(record[field]).trim() === select.value;
+          });
+        }
+      });
+      currentResults = filtered;
+      currentPage = 1;
+      displayResults();
+    }
+
+    // Display results as cards for the current page
+    function displayResults() {
+      resultsContainer.innerHTML = "";
+      // Calculate paging indices
+      const startIdx = (currentPage - 1) * resultsPerPage;
+      const endIdx = startIdx + resultsPerPage;
+      const pageResults = currentResults.slice(startIdx, endIdx);
+
+      pageResults.forEach(record => {
+        const card = document.createElement('div');
+        card.className = "bg-white shadow-md rounded-lg p-4 border border-blue-200";
+        const list = document.createElement('ul');
+        list.className = "space-y-1";
+        // Loop through each column; skip suppressed address fields if empty
+        columns.forEach(col => {
+          const value = record[col] ?? '';
+          if (suppressedFields.includes(col) && (!value || value.trim() === "")) {
+            return; // Skip rendering if empty
+          }
+          const item = document.createElement('li');
+          item.innerHTML = `<span class="font-semibold text-red-600">${col}:</span> ${value}`;
+          list.appendChild(item);
+        });
+        card.appendChild(list);
+        resultsContainer.appendChild(card);
+      });
+
+      // Update result count and page info
+      const totalPages = Math.ceil(currentResults.length / resultsPerPage);
+      resultCount.textContent = `Showing ${currentResults.length} result${currentResults.length === 1 ? "" : "s"}.`;
+      pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+      // Enable/disable pagination buttons
+      prevBtn.disabled = currentPage <= 1;
+      nextBtn.disabled = currentPage >= totalPages;
+    }
+
+    // Pagination button event listeners
+    prevBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        displayResults();
+      }
+    });
+    nextBtn.addEventListener('click', () => {
+      const totalPages = Math.ceil(currentResults.length / resultsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        displayResults();
+      }
+    });
+
+    // Handle search input (debounced)
+    searchInput.addEventListener('input', _.debounce(updateResults, 300));
+  </script>
+</body>
+</html>
+

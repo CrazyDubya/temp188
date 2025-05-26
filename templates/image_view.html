@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Image Detail - {{ filename }}</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <style>
+    /* Base styles */
+    body {
+      background-color: #f8f9fa;
+      padding-top: 70px; /* leave space for fixed header */
+    }
+    /* Fixed header for global action buttons */
+    .navbar-custom {
+      background-color: #343a40;
+    }
+    .navbar-custom .navbar-brand,
+    .navbar-custom .navbar-text,
+    .navbar-custom .nav-link {
+      color: #ffffff;
+    }
+    /* Left panel: Image display */
+    #image-panel {
+      overflow: hidden;
+      position: relative;
+      background: #000;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    #panzoom-container {
+      width: 100%;
+      text-align: center;
+    }
+    #panzoom-container img {
+      max-width: 100%;
+      max-height: 80vh;
+      transition: transform 0.25s ease;
+      border-radius: 4px;
+    }
+    /* Right panel: Signature cards container */
+    #signatures-container {
+      max-height: 75vh;
+      overflow-y: auto;
+      padding: 10px;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    .signature-card {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      padding: 10px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .signature-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 10px rgba(0,123,255,0.5);
+    }
+    .signature-card.active {
+      border-width: 2px;
+    }
+    /* Status colors */
+    .status-default {
+      background-color: #ffffff;
+    }
+    .status-match {
+      background-color: #d4edda;
+    }
+    .status-nomatch {
+      background-color: #f8d7da;
+    }
+    /* Global header actions: already fixed in navbar */
+  </style>
+</head>
+<body>
+  <!-- Fixed Header with Global Action Buttons -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Signature Extraction</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item me-2">
+            <button class="btn btn-warning btn-sm" onclick="rerunGrok()">Rerun Grok</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-secondary btn-sm" onclick="goToDashboard()">Dashboard</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid my-3">
+    <div class="row">
+      <!-- Left Panel: Zoomable & Pannable Image -->
+      <div class="col-md-6 mb-3" id="image-panel">
+        <h4 class="text-white">{{ filename }}</h4>
+        <div id="panzoom-container">
+          <img id="detail-image" src="{{ url_for('uploaded_file', filename=filename) }}" alt="Image">
+        </div>
+        <div id="zoom-controls" class="btn-group">
+          <button id="zoom-in" class="btn btn-primary btn-sm">Zoom In</button>
+          <button id="zoom-out" class="btn btn-primary btn-sm">Zoom Out</button>
+          <button id="reset-zoom" class="btn btn-primary btn-sm">Reset</button>
+        </div>
+      </div>
+      <!-- Right Panel: Signature Cards and Details -->
+      <div class="col-md-6">
+        <h4 class="mb-3">Extracted Signatures</h4>
+        <div id="signatures-container">
+          <div id="signatures-list">
+            <!-- Signature cards will be populated by JS -->
+          </div>
+          <hr>
+          <div id="signature-details">
+            <!-- Detailed voter search results for the selected signature will load here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Include Panzoom and Bootstrap JS -->
+  <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/image_view.js') }}"></script>
+</body>
+</html>
