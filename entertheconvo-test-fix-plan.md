@@ -21,23 +21,29 @@
 ## 🎯 Phase 1: Database Schema Foundation (HIGH PRIORITY)
 **Goal:** Fix fundamental database schema mismatches causing 500 errors
 
-### Task 1.1: Audit Complete Database Schema Differences
-- [ ] Compare production schema vs test schema for ALL tables
-- [ ] Document every missing column, wrong type, missing table
-- [ ] Verify foreign key relationships match
-- **Security Check:** Ensure this doesn't simplify any table structures
+### Task 1.1: Audit Complete Database Schema Differences ✅ COMPLETED
+- [x] Compare production schema vs test schema for ALL tables
+- [x] Document every missing column, wrong type, missing table
+- [x] Verify foreign key relationships match
+- **Security Check:** ✅ Confirmed - production schema is more complex, not simplified
+- **CRITICAL FINDING:** Test database uses INTEGER IDs, production uses TEXT UUIDs - FUNDAMENTAL MISMATCH
 
-### Task 1.2: Fix API Keys Table Schema 
-- [ ] Add missing columns in test database (key_prefix, revoked_at, etc.)
-- [ ] Fix data types to match production
-- [ ] Test API key CRUD operations work with real database queries
-- **Security Check:** Verify API key authentication actually validates real keys
+### Task 1.2: EMERGENCY - Complete Test Database Schema Rebuild ⚠️ CRITICAL
+- [ ] Backup current test database creation logic
+- [ ] Rewrite ALL table schemas to exactly match production
+- [ ] Change ID fields from INTEGER to TEXT with UUID generation
+- [ ] Add ALL missing columns and constraints
+- [ ] Add missing `message_history` table
+- [ ] Fix audit_logs table to match production structure
+- [ ] Update all foreign key references to use TEXT
+- **Security Check:** Verify rebuilt schema maintains all production security features
 
-### Task 1.3: Fix Users Table Schema Alignment
-- [ ] Ensure all production columns exist in test (github_id, avatar_url, bio, etc.)
-- [ ] Fix constraint issues causing UNIQUE failures
-- [ ] Implement proper test data cleanup between tests
-- **Security Check:** Verify user creation tests don't bypass password hashing
+### Task 1.3: Update Test Data Seeding for New Schema
+- [ ] Update user creation to use TEXT UUIDs
+- [ ] Update room creation for new foreign key types  
+- [ ] Fix all test data insertion to match new schema
+- [ ] Test that foreign key relationships work properly
+- **Security Check:** Verify test data doesn't bypass any production constraints
 
 ## 🎯 Phase 2: API Key Management System (HIGH PRIORITY)
 **Goal:** Fix complete API key system failure (all tests failing with 500 errors)
