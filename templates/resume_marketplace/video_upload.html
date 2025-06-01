@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video - Resume Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/resume/" class="text-xl font-bold text-purple-600">
+                        <i class="fas fa-briefcase mr-2"></i>Resume Marketplace
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/resume/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                    <span class="text-gray-700">Welcome, {{ user.username }}!</span>
+                    <a href="/logout" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <div class="flex items-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-6">
+                    <i class="fas fa-video text-blue-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Upload Introduction Video</h1>
+                    <p class="text-gray-600">Upload a brief introduction video. Employers pay $5 to view it, and you earn 50%.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Tips -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+            <h3 class="font-semibold text-yellow-800 mb-3">
+                <i class="fas fa-lightbulb mr-2"></i>Video Tips for Success
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4 text-yellow-700 text-sm">
+                <div>
+                    <p><strong>Keep it short:</strong> 30-90 seconds is ideal</p>
+                    <p><strong>Good lighting:</strong> Face a window or use a ring light</p>
+                    <p><strong>Clear audio:</strong> Record in a quiet environment</p>
+                </div>
+                <div>
+                    <p><strong>Professional appearance:</strong> Dress as you would for an interview</p>
+                    <p><strong>Be yourself:</strong> Show your personality and enthusiasm</p>
+                    <p><strong>Practice:</strong> Do a few takes to get comfortable</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <form id="videoUploadForm" enctype="multipart/form-data" class="space-y-6">
+                <!-- File Upload Area -->
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition duration-300" id="dropZone">
+                    <div class="space-y-4">
+                        <div class="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-cloud-upload-alt text-gray-600 text-3xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xl font-semibold text-gray-900">Upload your introduction video</p>
+                            <p class="text-gray-600">Drag and drop your video here, or click to browse</p>
+                        </div>
+                        <input type="file" name="video" id="videoFile" accept=".mp4,.mov,.avi,.webm" class="hidden">
+                        <button type="button" onclick="document.getElementById('videoFile').click()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">
+                            <i class="fas fa-video mr-2"></i>Select Video
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File Info -->
+                <div id="fileInfo" class="hidden bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-file-video text-blue-500 text-2xl mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-gray-900" id="fileName"></p>
+                                <p class="text-gray-600 text-sm" id="fileSize"></p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="clearFile()" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video Preview -->
+                <div id="videoPreview" class="hidden">
+                    <h3 class="font-semibold text-gray-900 mb-3">Video Preview:</h3>
+                    <video id="previewVideo" controls class="w-full max-w-md mx-auto rounded-lg shadow-lg">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <!-- File Requirements -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-800 mb-2">Video Requirements:</h3>
+                    <ul class="text-blue-700 text-sm space-y-1">
+                        <li><i class="fas fa-check mr-2"></i>Accepted formats: MP4, MOV, AVI, WEBM</li>
+                        <li><i class="fas fa-check mr-2"></i>Maximum file size: 100MB</li>
+                        <li><i class="fas fa-check mr-2"></i>Recommended length: 30-90 seconds</li>
+                        <li><i class="fas fa-check mr-2"></i>Professional introduction content</li>
+                        <li><i class="fas fa-check mr-2"></i>Good video and audio quality</li>
+                    </ul>
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="uploadProgress" class="hidden">
+                    <div class="bg-gray-200 rounded-full h-3">
+                        <div id="progressBar" class="bg-blue-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p class="text-center text-sm text-gray-600 mt-2"><span id="progressPercent">0</span>% uploaded</p>
+                </div>
+
+                <!-- Upload Button -->
+                <div class="flex justify-between items-center">
+                    <a href="/resume/dashboard" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </a>
+                    <button type="submit" id="uploadBtn" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-upload mr-2"></i>Upload Video
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- How It Works -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mt-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">How It Works</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-purple-600 font-bold text-xl">1</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Record Video</h3>
+                    <p class="text-gray-600 text-sm">Create a 30-90 second professional introduction video</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-purple-600 font-bold text-xl">2</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Employers Watch</h3>
+                    <p class="text-gray-600 text-sm">Employers discover and pay $5 to watch your video</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-purple-600 font-bold text-xl">3</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">You Earn Money</h3>
+                    <p class="text-gray-600 text-sm">Receive 50% of each $5 payment ($2.50 per view)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md mx-4">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Upload Successful!</h3>
+                <p class="text-gray-600 mb-6">Your introduction video has been uploaded and is now available to employers.</p>
+                <a href="/resume/dashboard" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">
+                    Return to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('videoFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const form = document.getElementById('videoUploadForm');
+        const videoPreview = document.getElementById('videoPreview');
+        const previewVideo = document.getElementById('previewVideo');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+
+        // Drag and drop functionality
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-blue-500', 'bg-blue-50');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                // Validate file type
+                const allowedTypes = ['.mp4', '.mov', '.avi', '.webm'];
+                const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!allowedTypes.includes(fileExt)) {
+                    alert('Please select an MP4, MOV, AVI, or WEBM video file.');
+                    clearFile();
+                    return;
+                }
+
+                // Validate file size (100MB limit)
+                if (file.size > 100 * 1024 * 1024) {
+                    alert('File size must be less than 100MB.');
+                    clearFile();
+                    return;
+                }
+
+                // Display file info
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.classList.remove('hidden');
+                uploadBtn.disabled = false;
+
+                // Show video preview
+                const url = URL.createObjectURL(file);
+                previewVideo.src = url;
+                videoPreview.classList.remove('hidden');
+            }
+        }
+
+        function clearFile() {
+            fileInput.value = '';
+            fileInfo.classList.add('hidden');
+            videoPreview.classList.add('hidden');
+            uploadBtn.disabled = true;
+            if (previewVideo.src) {
+                URL.revokeObjectURL(previewVideo.src);
+                previewVideo.src = '';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Form submission with progress
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!fileInput.files[0]) {
+                alert('Please select a video file to upload.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('video', fileInput.files[0]);
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Uploading...';
+            uploadProgress.classList.remove('hidden');
+
+            try {
+                const xhr = new XMLHttpRequest();
+                
+                // Upload progress
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percent + '%';
+                        progressPercent.textContent = percent;
+                    }
+                });
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const result = JSON.parse(xhr.responseText);
+                        if (result.success) {
+                            document.getElementById('successModal').classList.remove('hidden');
+                        } else {
+                            alert('Upload failed: ' + (result.error || 'Unknown error'));
+                        }
+                    } else {
+                        alert('Upload failed: Server error');
+                    }
+                    
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload Video';
+                    uploadProgress.classList.add('hidden');
+                    progressBar.style.width = '0%';
+                    progressPercent.textContent = '0';
+                };
+
+                xhr.onerror = function() {
+                    alert('Upload failed: Network error');
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload Video';
+                    uploadProgress.classList.add('hidden');
+                };
+
+                xhr.open('POST', '/resume/upload/video');
+                xhr.send(formData);
+
+            } catch (error) {
+                alert('Upload failed: ' + error.message);
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload Video';
+                uploadProgress.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

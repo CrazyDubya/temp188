@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup - Resume Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/resume/" class="text-xl font-bold text-purple-600">
+                        <i class="fas fa-briefcase mr-2"></i>Resume Marketplace
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/resume/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                    <span class="text-gray-700">Welcome, {{ user.username }}!</span>
+                    <a href="/logout" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <div class="flex items-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mr-6">
+                    <i class="fas fa-user-edit text-purple-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Build Your Profile</h1>
+                    <p class="text-gray-600">Complete your professional profile to increase visibility and earn more from your content.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Identity Score -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Identity Trust Score</h3>
+                    <p class="text-gray-600">Higher scores increase visibility to employers</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-2">
+                        <span class="text-2xl font-bold text-purple-600">{{ profile.identity_score or 0 }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">/ 100</p>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="mt-4">
+                <div class="bg-gray-200 rounded-full h-3">
+                    <div class="bg-purple-600 h-3 rounded-full transition-all duration-300" style="width: {{ profile.identity_score or 0 }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <form method="POST" class="space-y-8">
+                <!-- Basic Information -->
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-user mr-2 text-purple-600"></i>Basic Information
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="display_name" class="block text-sm font-medium text-gray-700 mb-2">Display Name *</label>
+                            <input type="text" id="display_name" name="display_name" 
+                                   value="{{ profile.display_name or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                   placeholder="Your professional name">
+                        </div>
+                        <div>
+                            <label for="experience_years" class="block text-sm font-medium text-gray-700 mb-2">Years of Experience</label>
+                            <input type="number" id="experience_years" name="experience_years" 
+                                   value="{{ profile.experience_years or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                   placeholder="e.g., 5" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Bio -->
+                <div>
+                    <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">Professional Bio *</label>
+                    <textarea id="bio" name="bio" rows="4" 
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                              placeholder="Describe your professional background, skills, and career goals...">{{ profile.bio or '' }}</textarea>
+                    <p class="text-sm text-gray-500 mt-2">Minimum 50 characters for trust score points</p>
+                </div>
+
+                <!-- Skills -->
+                <div>
+                    <label for="skills" class="block text-sm font-medium text-gray-700 mb-2">Skills & Expertise *</label>
+                    <input type="text" id="skills" name="skills" 
+                           value="{{ profile.skills or '' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                           placeholder="JavaScript, Python, Project Management, etc. (comma-separated)">
+                    <p class="text-sm text-gray-500 mt-2">List at least 3 skills for trust score points</p>
+                </div>
+
+                <!-- Education -->
+                <div>
+                    <label for="education" class="block text-sm font-medium text-gray-700 mb-2">Education</label>
+                    <input type="text" id="education" name="education" 
+                           value="{{ profile.education or '' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                           placeholder="e.g., BS Computer Science, Stanford University">
+                </div>
+
+                <!-- Professional Links -->
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-link mr-2 text-purple-600"></i>Professional Links
+                    </h3>
+                    <p class="text-gray-600 mb-6">Adding professional links significantly increases your trust score and visibility to employers.</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="linkedin_url" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fab fa-linkedin text-blue-600 mr-2"></i>LinkedIn Profile
+                            </label>
+                            <input type="url" id="linkedin_url" name="linkedin_url" 
+                                   value="{{ profile.linkedin_url or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                   placeholder="https://linkedin.com/in/yourprofile">
+                            <p class="text-sm text-green-600 mt-1">+15 trust score points</p>
+                        </div>
+                        
+                        <div>
+                            <label for="github_url" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fab fa-github text-gray-800 mr-2"></i>GitHub Profile
+                            </label>
+                            <input type="url" id="github_url" name="github_url" 
+                                   value="{{ profile.github_url or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                   placeholder="https://github.com/yourusername">
+                            <p class="text-sm text-green-600 mt-1">+15 trust score points</p>
+                        </div>
+                        
+                        <div>
+                            <label for="portfolio_url" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-globe text-purple-600 mr-2"></i>Portfolio Website
+                            </label>
+                            <input type="url" id="portfolio_url" name="portfolio_url" 
+                                   value="{{ profile.portfolio_url or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                   placeholder="https://yourportfolio.com">
+                            <p class="text-sm text-green-600 mt-1">+10 trust score points</p>
+                        </div>
+                        
+                        <div>
+                            <label for="twitter_url" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fab fa-twitter text-blue-400 mr-2"></i>Twitter/X Profile
+                            </label>
+                            <input type="url" id="twitter_url" name="twitter_url" 
+                                   value="{{ profile.twitter_url or '' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                   placeholder="https://twitter.com/yourusername">
+                            <p class="text-sm text-green-600 mt-1">+10 trust score points</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hourly Rate -->
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-dollar-sign mr-2 text-purple-600"></i>Interview Pricing
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="hourly_rate" class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate for Live Interviews</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                <input type="number" id="hourly_rate" name="hourly_rate" 
+                                       value="{{ profile.hourly_rate or '' }}"
+                                       class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                       placeholder="50" min="0" step="5">
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Set your rate for live interview sessions (optional)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+                    <a href="/resume/dashboard" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </a>
+                    <button type="submit" class="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition duration-300">
+                        <i class="fas fa-save mr-2"></i>Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Trust Score Breakdown -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mt-8">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">How to Increase Your Trust Score</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Basic Information (30 points)</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Complete display name (10 pts)</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Professional bio 50+ chars (10 pts)</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Education information (10 pts)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Skills & Experience (20 points)</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>List 3+ skills (10 pts)</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Years of experience (10 pts)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-3">Professional Links (50 points)</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>LinkedIn profile (15 pts)</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>GitHub profile (15 pts)</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Portfolio website (10 pts)</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Twitter/X profile (10 pts)</li>
+                    </ul>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <h4 class="font-semibold text-purple-900 mb-2">
+                        <i class="fas fa-star text-purple-600 mr-2"></i>Pro Tip
+                    </h4>
+                    <p class="text-sm text-purple-700">Complete all sections to achieve a perfect 100 trust score and maximize your earning potential!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    {% if get_flashed_messages() %}
+        <div class="fixed top-4 right-4 z-50">
+            {% for message in get_flashed_messages() %}
+                <div class="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg mb-2">
+                    <i class="fas fa-check mr-2"></i>{{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <script>
+        // Auto-calculate and display trust score preview
+        function calculatePreviewScore() {
+            let score = 0;
+            
+            // Basic info (30 points)
+            if (document.getElementById('display_name').value.length > 2) score += 10;
+            if (document.getElementById('bio').value.length > 50) score += 10;
+            if (document.getElementById('education').value.length > 0) score += 10;
+            
+            // Skills and experience (20 points)
+            const skills = document.getElementById('skills').value.split(',').filter(s => s.trim().length > 0);
+            if (skills.length >= 3) score += 10;
+            if (document.getElementById('experience_years').value > 0) score += 10;
+            
+            // Professional links (50 points)
+            if (document.getElementById('linkedin_url').value.length > 0) score += 15;
+            if (document.getElementById('github_url').value.length > 0) score += 15;
+            if (document.getElementById('portfolio_url').value.length > 0) score += 10;
+            if (document.getElementById('twitter_url').value.length > 0) score += 10;
+            
+            return Math.min(score, 100);
+        }
+
+        // Update score preview on form changes
+        const formInputs = document.querySelectorAll('input, textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('input', () => {
+                const newScore = calculatePreviewScore();
+                // Update the visual score if needed
+                // This could be enhanced to show live preview
+            });
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', (e) => {
+            const displayName = document.getElementById('display_name').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const skills = document.getElementById('skills').value.trim();
+            
+            if (!displayName) {
+                alert('Please enter a display name.');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!bio) {
+                alert('Please enter a professional bio.');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!skills) {
+                alert('Please enter your skills and expertise.');
+                e.preventDefault();
+                return;
+            }
+        });
+
+        // Auto-hide success messages
+        setTimeout(() => {
+            const messages = document.querySelectorAll('.fixed .bg-green-500');
+            messages.forEach(msg => msg.style.display = 'none');
+        }, 5000);
+    </script>
+</body>
+</html>

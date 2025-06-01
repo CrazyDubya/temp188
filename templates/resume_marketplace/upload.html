@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume - Resume Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/resume/" class="text-xl font-bold text-purple-600">
+                        <i class="fas fa-briefcase mr-2"></i>Resume Marketplace
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/resume/dashboard" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                    <span class="text-gray-700">Welcome, {{ user.username }}!</span>
+                    <a href="/logout" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <div class="flex items-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mr-6">
+                    <i class="fas fa-file-alt text-green-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Upload Your Resume</h1>
+                    <p class="text-gray-600">Upload your professional resume and start earning. Employers pay $1 to access it, and you earn 50%.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <form id="resumeUploadForm" enctype="multipart/form-data" class="space-y-6">
+                <!-- File Upload Area -->
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-green-500 transition duration-300" id="dropZone">
+                    <div class="space-y-4">
+                        <div class="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-cloud-upload-alt text-gray-600 text-3xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xl font-semibold text-gray-900">Upload your resume</p>
+                            <p class="text-gray-600">Drag and drop your file here, or click to browse</p>
+                        </div>
+                        <input type="file" name="resume" id="resumeFile" accept=".pdf,.doc,.docx" class="hidden">
+                        <button type="button" onclick="document.getElementById('resumeFile').click()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-300">
+                            <i class="fas fa-file-upload mr-2"></i>Select File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File Info -->
+                <div id="fileInfo" class="hidden bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-file-pdf text-red-500 text-2xl mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-gray-900" id="fileName"></p>
+                                <p class="text-gray-600 text-sm" id="fileSize"></p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="clearFile()" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File Requirements -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-800 mb-2">File Requirements:</h3>
+                    <ul class="text-blue-700 text-sm space-y-1">
+                        <li><i class="fas fa-check mr-2"></i>Accepted formats: PDF, DOC, DOCX</li>
+                        <li><i class="fas fa-check mr-2"></i>Maximum file size: 5MB</li>
+                        <li><i class="fas fa-check mr-2"></i>Professional resume content only</li>
+                        <li><i class="fas fa-check mr-2"></i>No personal information like SSN or address required</li>
+                    </ul>
+                </div>
+
+                <!-- Upload Button -->
+                <div class="flex justify-between items-center">
+                    <a href="/resume/dashboard" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </a>
+                    <button type="submit" id="uploadBtn" class="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-upload mr-2"></i>Upload Resume
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- How It Works -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mt-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">How It Works</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-purple-600 font-bold text-xl">1</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Upload Resume</h3>
+                    <p class="text-gray-600 text-sm">Upload your professional resume in PDF, DOC, or DOCX format</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-purple-600 font-bold text-xl">2</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Employers Browse</h3>
+                    <p class="text-gray-600 text-sm">Employers discover and pay $1 to access your resume</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-purple-600 font-bold text-xl">3</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">You Earn Money</h3>
+                    <p class="text-gray-600 text-sm">Receive 50% of each $1 payment (50¢ per view)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md mx-4">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Upload Successful!</h3>
+                <p class="text-gray-600 mb-6">Your resume has been uploaded and is now available to employers.</p>
+                <a href="/resume/dashboard" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-300">
+                    Return to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('resumeFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const form = document.getElementById('resumeUploadForm');
+
+        // Drag and drop functionality
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-green-500', 'bg-green-50');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-green-500', 'bg-green-50');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-green-500', 'bg-green-50');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                // Validate file type
+                const allowedTypes = ['.pdf', '.doc', '.docx'];
+                const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!allowedTypes.includes(fileExt)) {
+                    alert('Please select a PDF, DOC, or DOCX file.');
+                    clearFile();
+                    return;
+                }
+
+                // Validate file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB.');
+                    clearFile();
+                    return;
+                }
+
+                // Display file info
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.classList.remove('hidden');
+                uploadBtn.disabled = false;
+            }
+        }
+
+        function clearFile() {
+            fileInput.value = '';
+            fileInfo.classList.add('hidden');
+            uploadBtn.disabled = true;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!fileInput.files[0]) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('resume', fileInput.files[0]);
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Uploading...';
+
+            try {
+                const response = await fetch('/resume/upload/resume', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('successModal').classList.remove('hidden');
+                } else {
+                    alert('Upload failed: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Upload failed: ' + error.message);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Upload Resume';
+            }
+        });
+    </script>
+</body>
+</html>
