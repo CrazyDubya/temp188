@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Maintenance Mode - {service_name}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .maintenance-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px;
+        }
+        .maintenance-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        .service-name {
+            color: #FFD700;
+            font-weight: bold;
+        }
+        .description {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .time-info {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .time-label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+        .time-value {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .status-info {
+            margin-top: 30px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            .maintenance-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .maintenance-icon {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-container">
+        <div class="maintenance-icon">🔧</div>
+        <h1>Scheduled Maintenance</h1>
+        <p class="description">
+            <span class="service-name">{service_name}</span> is currently undergoing scheduled maintenance 
+            to improve performance and add new features.
+        </p>
+        
+        <div class="time-info">
+            <div class="time-label">Started:</div>
+            <div class="time-value">{start_time}</div>
+        </div>
+        
+        <div class="time-info">
+            <div class="time-label">Expected to complete:</div>
+            <div class="time-value">{end_time}</div>
+        </div>
+        
+        <div class="status-info">
+            <p>We apologize for any inconvenience. Please check back soon!</p>
+            <p>For urgent matters, contact: admin@conflost.com</p>
+        </div>
+    </div>
+</body>
+</html>

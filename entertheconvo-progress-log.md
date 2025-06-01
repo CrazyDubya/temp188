@@ -23,8 +23,23 @@
 **Started:** 2025-01-27
 
 ### Phase 1, Task 1.4: Fix Controller Code for UUID Compatibility
+**Status:** IN PROGRESS  
+**Started:** 2025-01-27
+
+### Phase 1, Task 1.5: Fix API Key Authentication Format Issues
 **Status:** IN PROGRESS
 **Started:** 2025-01-27
+
+#### Actions Taken:
+1. ✅ Fixed Bearer vs API-Key format in authorization tests (6+ locations)
+2. ✅ Corrected column name from `last_used` to `last_used_at` in tests
+3. ✅ Fixed test endpoint selection (used auth endpoint instead of public rooms endpoint)
+4. ✅ Updated API key prefix from `etck_` to `etk_` in remaining tests
+
+#### Test Results:
+- ✅ **Invalid API Key Rejection Test: PASSING!** - Authentication format working
+- ✅ API key format `API-Key` now correctly recognized by middleware
+- ✅ Column name mismatches resolved
 
 #### Actions Taken:
 1. ✅ Fixed API keys routes to use test database abstraction instead of hardcoded production DB

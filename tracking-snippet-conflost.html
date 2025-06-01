@@ -1,0 +1,58 @@
+<!-- Analytics Tracking Pixel - Add to each monitored site -->
+<script>
+(function() {
+    'use strict';
+    
+    // Configuration
+    var ANALYTICS_SERVER = 'https://conflost.com';
+    var SITE_NAME = 'conflost'; // Replace with actual site name
+    
+    // Create tracking pixel
+    function sendAnalytics() {
+        try {
+            var pixel = new Image(1, 1);
+            pixel.style.position = 'absolute';
+            pixel.style.left = '-9999px';
+            pixel.style.top = '-9999px';
+            pixel.style.visibility = 'hidden';
+            
+            var params = new URLSearchParams({
+                site: SITE_NAME,
+                page: window.location.pathname || '/',
+                t: Date.now() // Cache buster
+            });
+            
+            pixel.src = ANALYTICS_SERVER + '/analytics-pixel.gif?' + params.toString();
+            
+            // Append to body (will be removed automatically)
+            if (document.body) {
+                document.body.appendChild(pixel);
+                
+                // Remove after loading to keep DOM clean
+                pixel.onload = pixel.onerror = function() {
+                    if (pixel.parentNode) {
+                        pixel.parentNode.removeChild(pixel);
+                    }
+                };
+            }
+        } catch (e) {
+            // Fail silently - analytics should never break the site
+            console.debug('Analytics tracking failed:', e);
+        }
+    }
+    
+    // Send analytics when page loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', sendAnalytics);
+    } else {
+        sendAnalytics();
+    }
+})();
+</script>
+
+<!-- Alternative: Simple IMG tag version (less flexible) -->
+<!-- 
+<img src="https://conflost.com/analytics-pixel.gif?site=conflost&page=/" 
+     width="1" height="1" style="position:absolute;left:-9999px;top:-9999px;visibility:hidden;" 
+     alt="" />
+-->
