@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SThompson Resume - temp188.com</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5046e5;
+            --primary-dark: #4338ca;
+            --secondary: #0ea5e9;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .upload-area {
+            border: 3px dashed #cbd5e0;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: #f7fafc;
+        }
+
+        .pdf-viewer {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .flash-message {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-4xl mx-auto mb-6">
+                {% for category, message in messages %}
+                    <div class="flash-message p-4 rounded-lg mb-2 {% if category == 'error' %}bg-red-100 text-red-700{% elif category == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                        <i class="fas {% if category == 'error' %}fa-exclamation-circle{% elif category == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <a href="/" class="inline-block mb-4 text-white hover:text-gray-200 transition">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Home
+            </a>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-3">
+                <i class="fas fa-file-pdf mr-3"></i>
+                SThompson Resume
+            </h1>
+            <p class="text-white text-lg opacity-90">
+                {% if has_resume %}
+                    Resume viewing portal
+                {% else %}
+                    One-time upload portal
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-10">
+            {% if not has_resume %}
+                <!-- Upload Form -->
+                <div class="text-center">
+                    <div class="mb-6">
+                        <i class="fas fa-upload text-6xl text-indigo-500 mb-4"></i>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Upload Your Resume</h2>
+                        <p class="text-gray-600">PDF format only • One-time upload</p>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                        <div class="upload-area rounded-lg p-12 mb-6 cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                            <input type="file" id="fileInput" name="resume" accept=".pdf" class="hidden" onchange="showFileName(this)">
+                            <div id="uploadPrompt">
+                                <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-3"></i>
+                                <p class="text-gray-600 text-lg">Click to select PDF file</p>
+                                <p class="text-gray-400 text-sm mt-2">or drag and drop</p>
+                            </div>
+                            <div id="fileName" class="hidden">
+                                <i class="fas fa-file-pdf text-5xl text-red-500 mb-3"></i>
+                                <p class="text-gray-800 text-lg font-semibold" id="fileNameText"></p>
+                                <p class="text-gray-500 text-sm mt-2">Click to change file</p>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="uploadBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                            <i class="fas fa-upload mr-2"></i>
+                            Upload Resume
+                        </button>
+                    </form>
+
+                    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <strong>Note:</strong> Once uploaded, this resume will be permanently displayed. Upload feature will be disabled after successful upload.
+                        </p>
+                    </div>
+                </div>
+            {% else %}
+                <!-- PDF Viewer -->
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                        <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                        Resume Document
+                    </h2>
+                    <p class="text-gray-600">View or download the resume below</p>
+                </div>
+
+                <div class="mb-6 text-center">
+                    <a href="{{ url_for('sthompson_resume.view_resume') }}" target="_blank" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition mr-3">
+                        <i class="fas fa-external-link-alt mr-2"></i>
+                        Open in New Tab
+                    </a>
+                    <a href="{{ url_for('sthompson_resume.view_resume') }}" download="SThompson_Resume.pdf" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition">
+                        <i class="fas fa-download mr-2"></i>
+                        Download PDF
+                    </a>
+                </div>
+
+                <!-- Embedded PDF Viewer -->
+                <div class="pdf-viewer rounded-lg overflow-hidden bg-gray-100" style="min-height: 1200px;">
+                    <object
+                        data="{{ url_for('sthompson_resume.view_resume') }}"
+                        type="application/pdf"
+                        width="100%"
+                        style="min-height: 1200px;">
+                        <iframe
+                            src="{{ url_for('sthompson_resume.view_resume') }}"
+                            width="100%"
+                            style="min-height: 1200px; border: none;">
+                            <p class="p-8 text-center">
+                                Your browser does not support PDF viewing.
+                                <a href="{{ url_for('sthompson_resume.view_resume') }}" class="text-indigo-600 underline" download>Download the PDF</a> instead.
+                            </p>
+                        </iframe>
+                    </object>
+                </div>
+
+                <div class="mt-6 p-4 bg-green-50 rounded-lg text-center">
+                    <p class="text-sm text-green-800">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Resume successfully uploaded and displayed
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-white opacity-75">
+            <p>&copy; 2025 temp188.com - Part of the Creative Tools Platform</p>
+        </div>
+    </div>
+
+    <script>
+        function showFileName(input) {
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            const fileName = document.getElementById('fileName');
+            const fileNameText = document.getElementById('fileNameText');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                // Validate PDF
+                if (file.type !== 'application/pdf') {
+                    alert('Please select a PDF file');
+                    input.value = '';
+                    return;
+                }
+
+                // Show file name
+                fileNameText.textContent = file.name;
+                uploadPrompt.classList.add('hidden');
+                fileName.classList.remove('hidden');
+            } else {
+                uploadPrompt.classList.remove('hidden');
+                fileName.classList.add('hidden');
+            }
+        }
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.upload-area');
+
+        if (uploadArea) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                uploadArea.style.borderColor = '#5046e5';
+                uploadArea.style.backgroundColor = '#f7fafc';
+            }
+
+            function unhighlight(e) {
+                uploadArea.style.borderColor = '#cbd5e0';
+                uploadArea.style.backgroundColor = 'transparent';
+            }
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                document.getElementById('fileInput').files = files;
+                showFileName(document.getElementById('fileInput'));
+            }
+        }
+    </script>
+</body>
+</html>

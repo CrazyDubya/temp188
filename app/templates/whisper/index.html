@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whisper AI Suite - TTS, STT & Translation | temp188.com</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { background-color: #4f46e5; color: white; }
+        .progress-bar { transition: width 0.3s ease; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold text-indigo-600">
+                <i class="fas fa-rocket mr-2"></i>temp188
+            </a>
+            <a href="/" class="text-gray-600 hover:text-indigo-600">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-12 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-microphone-lines text-indigo-600"></i> Whisper AI Suite
+            </h1>
+            <p class="text-xl text-gray-600">Text-to-Speech • Speech-to-Text • Translation</p>
+            <div class="mt-4 inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                <i class="fas fa-bolt mr-2"></i> Optimized for 2-Core CPU • 15x Faster STT
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-t-xl shadow-lg">
+            <div class="flex border-b border-gray-200">
+                <button class="tab-btn active flex-1 px-6 py-4 text-center font-semibold hover:bg-gray-50 rounded-tl-xl" data-tab="tts">
+                    <i class="fas fa-volume-up mr-2"></i>Text-to-Speech
+                </button>
+                <button class="tab-btn flex-1 px-6 py-4 text-center font-semibold hover:bg-gray-50" data-tab="stt">
+                    <i class="fas fa-microphone mr-2"></i>Speech-to-Text
+                </button>
+                <button class="tab-btn flex-1 px-6 py-4 text-center font-semibold hover:bg-gray-50 rounded-tr-xl" data-tab="translate">
+                    <i class="fas fa-language mr-2"></i>Translation
+                </button>
+            </div>
+        </div>
+
+        <!-- TTS Tab -->
+        <div id="tts" class="tab-content active bg-white rounded-b-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold mb-6">Convert Text to Speech</h2>
+
+            <div class="mb-6">
+                <label class="block text-lg font-semibold text-gray-700 mb-2">
+                    Enter Your Text <span class="text-sm text-gray-500">(max 3000 characters)</span>
+                </label>
+                <textarea
+                    id="tts-input"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200"
+                    rows="6"
+                    maxlength="3000"
+                    placeholder="Type or paste your text here..."
+                ></textarea>
+                <div class="flex justify-between mt-2">
+                    <span id="tts-char-count" class="text-sm text-gray-500">0 / 3000 characters</span>
+                    <button id="tts-clear" class="text-sm text-red-500 hover:text-red-700">
+                        <i class="fas fa-times-circle"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">TTS Engine</label>
+                    <select id="tts-engine" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg">
+                        <option value="gtts">Google TTS - Fast</option>
+                        <option value="edge">Microsoft Edge TTS - High Quality</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Voice Accent</label>
+                    <select id="tts-voice" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Speed: <span id="tts-speed-val">1.0x</span>
+                    </label>
+                    <input type="range" id="tts-speed" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full">
+                </div>
+            </div>
+
+            <button id="tts-generate" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-lg">
+                <i class="fas fa-magic"></i> Generate Speech
+            </button>
+
+            <div id="tts-loading" class="hidden mt-6 text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600"></div>
+                <p class="mt-4 text-gray-600">Generating speech...</p>
+            </div>
+
+            <div id="tts-result" class="hidden mt-8 p-6 bg-indigo-50 rounded-lg">
+                <h3 class="text-lg font-semibold mb-4"><i class="fas fa-headphones"></i> Your Generated Speech</h3>
+                <audio id="tts-audio" controls class="w-full mb-4"></audio>
+                <div class="flex gap-4">
+                    <a id="tts-download" href="#" download class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg text-center">
+                        <i class="fas fa-download"></i> Download MP3
+                    </a>
+                    <button id="tts-new" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 rounded-lg">
+                        <i class="fas fa-redo"></i> Generate New
+                    </button>
+                </div>
+            </div>
+
+            <div id="tts-error" class="hidden mt-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded"></div>
+        </div>
+
+        <!-- STT Tab -->
+        <div id="stt" class="tab-content bg-white rounded-b-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold mb-6">Convert Speech to Text</h2>
+
+            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                <p class="text-sm text-blue-800">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <strong>Optimized STT:</strong> faster-whisper with INT8 quantization • Processes audio in 4-5 seconds • Supports MP3, WAV, OGG, M4A, FLAC, WebM
+                </p>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-lg font-semibold text-gray-700 mb-2">
+                    Upload Audio File <span class="text-sm text-gray-500">(max 25MB)</span>
+                </label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-500 cursor-pointer transition">
+                    <input type="file" id="stt-file" accept=".mp3,.wav,.ogg,.m4a,.flac,.webm" class="hidden">
+                    <label for="stt-file" class="cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4 block"></i>
+                        <p class="text-lg font-semibold text-gray-700">Click to upload audio</p>
+                        <p class="text-sm text-gray-500">MP3, WAV, OGG, M4A, FLAC, WebM</p>
+                    </label>
+                </div>
+                <div id="stt-filename" class="hidden mt-3 p-3 bg-gray-100 rounded-lg">
+                    <i class="fas fa-file-audio mr-2"></i><span></span>
+                </div>
+            </div>
+
+            <button id="stt-transcribe" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-lg" disabled>
+                <i class="fas fa-microphone"></i> Transcribe Audio (Async Processing)
+            </button>
+
+            <div id="stt-processing" class="hidden mt-6">
+                <div class="bg-gray-100 rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-semibold">Processing Status:</span>
+                        <span id="stt-status" class="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-full text-sm font-semibold">
+                            PENDING
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-300 rounded-full h-3 mb-3">
+                        <div id="stt-progress" class="progress-bar bg-indigo-600 h-3 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <p id="stt-status-text" class="text-sm text-gray-600">Job submitted, waiting for processing...</p>
+                    <p class="text-xs text-gray-500 mt-2">Job ID: <span id="stt-job-id"></span></p>
+                </div>
+            </div>
+
+            <div id="stt-result" class="hidden mt-8 p-6 bg-green-50 rounded-lg border-2 border-green-200">
+                <h3 class="text-lg font-semibold mb-4 text-green-800">
+                    <i class="fas fa-check-circle"></i> Transcription Complete
+                </h3>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Detected Language:</label>
+                    <span id="stt-language" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold"></span>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Transcribed Text:</label>
+                    <textarea id="stt-text" class="w-full px-4 py-3 border-2 border-green-300 rounded-lg bg-white" rows="6" readonly></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button id="stt-copy" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
+                        <i class="fas fa-copy"></i> Copy Text
+                    </button>
+                    <button id="stt-new" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 rounded-lg">
+                        <i class="fas fa-redo"></i> Transcribe New
+                    </button>
+                </div>
+            </div>
+
+            <div id="stt-error" class="hidden mt-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded"></div>
+        </div>
+
+        <!-- Translation Tab -->
+        <div id="translate" class="tab-content bg-white rounded-b-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold mb-6">Translate Text</h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Source Language</label>
+                    <select id="trans-source" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg">
+                        <option value="auto">Auto-detect</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Target Language</label>
+                    <select id="trans-target" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg"></select>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <label class="block text-lg font-semibold text-gray-700 mb-2">
+                    Text to Translate <span class="text-sm text-gray-500">(max 3000 characters)</span>
+                </label>
+                <textarea
+                    id="trans-input"
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500"
+                    rows="6"
+                    maxlength="3000"
+                    placeholder="Enter text to translate..."
+                ></textarea>
+            </div>
+
+            <button id="trans-submit" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-lg">
+                <i class="fas fa-language"></i> Translate
+            </button>
+
+            <div id="trans-loading" class="hidden mt-6 text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-4 border-indigo-600"></div>
+            </div>
+
+            <div id="trans-result" class="hidden mt-8 p-6 bg-green-50 rounded-lg border-2 border-green-200">
+                <h3 class="text-lg font-semibold mb-4 text-green-800">
+                    <i class="fas fa-check-circle"></i> Translation Complete
+                </h3>
+                <textarea id="trans-output" class="w-full px-4 py-3 border-2 border-green-300 rounded-lg bg-white" rows="6" readonly></textarea>
+                <button id="trans-copy" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
+                    <i class="fas fa-copy"></i> Copy Translation
+                </button>
+            </div>
+
+            <div id="trans-error" class="hidden mt-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded"></div>
+        </div>
+    </div>
+
+    <script>
+    const gttsVoices = {{ gtts_languages | tojson }};
+    const edgeVoices = {{ edge_voices | tojson }};
+    const transLangs = {{ translation_languages | tojson }};
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+    });
+
+    // === TTS Tab ===
+    const ttsInput = document.getElementById('tts-input');
+    const ttsCharCount = document.getElementById('tts-char-count');
+    const ttsEngine = document.getElementById('tts-engine');
+    const ttsVoice = document.getElementById('tts-voice');
+    const ttsSpeed = document.getElementById('tts-speed');
+    const ttsSpeedVal = document.getElementById('tts-speed-val');
+    const ttsGenerate = document.getElementById('tts-generate');
+    const ttsLoading = document.getElementById('tts-loading');
+    const ttsResult = document.getElementById('tts-result');
+    const ttsAudio = document.getElementById('tts-audio');
+    const ttsDownload = document.getElementById('tts-download');
+    const ttsError = document.getElementById('tts-error');
+
+    updateTTSVoices();
+    ttsInput.addEventListener('input', () => {
+        ttsCharCount.textContent = `${ttsInput.value.length} / 3000 characters`;
+    });
+    document.getElementById('tts-clear').addEventListener('click', () => ttsInput.value = '');
+    ttsEngine.addEventListener('change', updateTTSVoices);
+    ttsSpeed.addEventListener('input', () => ttsSpeedVal.textContent = `${ttsSpeed.value}x`);
+    document.getElementById('tts-new').addEventListener('click', () => ttsResult.classList.add('hidden'));
+
+    function updateTTSVoices() {
+        const voices = ttsEngine.value === 'gtts' ? gttsVoices : edgeVoices;
+        ttsVoice.innerHTML = '';
+        for (const [key, value] of Object.entries(voices)) {
+            ttsVoice.innerHTML += `<option value="${key}">${value}</option>`;
+        }
+    }
+
+    ttsGenerate.addEventListener('click', async () => {
+        const text = ttsInput.value.trim();
+        if (!text) return showError(ttsError, 'Please enter some text');
+
+        hideAll();
+        ttsLoading.classList.remove('hidden');
+
+        try {
+            const response = await fetch('/whisper/api/tts', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    text: text,
+                    engine: ttsEngine.value,
+                    voice: ttsVoice.value,
+                    speed: parseFloat(ttsSpeed.value)
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed');
+
+            ttsAudio.src = data.audio_url;
+            ttsDownload.href = data.audio_url;
+            ttsDownload.download = data.filename;
+            ttsResult.classList.remove('hidden');
+            ttsAudio.play();
+        } catch (error) {
+            showError(ttsError, error.message);
+        } finally {
+            ttsLoading.classList.add('hidden');
+        }
+    });
+
+    // === STT Tab ===
+    const sttFile = document.getElementById('stt-file');
+    const sttFilename = document.getElementById('stt-filename');
+    const sttTranscribe = document.getElementById('stt-transcribe');
+    const sttProcessing = document.getElementById('stt-processing');
+    const sttStatus = document.getElementById('stt-status');
+    const sttProgress = document.getElementById('stt-progress');
+    const sttStatusText = document.getElementById('stt-status-text');
+    const sttJobId = document.getElementById('stt-job-id');
+    const sttResult = document.getElementById('stt-result');
+    const sttLanguage = document.getElementById('stt-language');
+    const sttText = document.getElementById('stt-text');
+    const sttError = document.getElementById('stt-error');
+
+    let pollInterval = null;
+
+    sttFile.addEventListener('change', () => {
+        if (sttFile.files.length > 0) {
+            sttFilename.querySelector('span').textContent = sttFile.files[0].name;
+            sttFilename.classList.remove('hidden');
+            sttTranscribe.disabled = false;
+        }
+    });
+
+    document.getElementById('stt-new').addEventListener('click', () => {
+        sttFile.value = '';
+        sttFilename.classList.add('hidden');
+        sttTranscribe.disabled = true;
+        sttProcessing.classList.add('hidden');
+        sttResult.classList.add('hidden');
+        if (pollInterval) clearInterval(pollInterval);
+    });
+
+    document.getElementById('stt-copy').addEventListener('click', () => {
+        navigator.clipboard.writeText(sttText.value);
+        alert('Text copied to clipboard!');
+    });
+
+    sttTranscribe.addEventListener('click', async () => {
+        if (!sttFile.files[0]) return;
+
+        hideAll();
+        sttProcessing.classList.remove('hidden');
+        sttStatus.textContent = 'PENDING';
+        sttStatus.className = 'px-3 py-1 bg-yellow-200 text-yellow-800 rounded-full text-sm font-semibold';
+        sttProgress.style.width = '0%';
+        sttStatusText.textContent = 'Submitting job...';
+
+        const formData = new FormData();
+        formData.append('audio', sttFile.files[0]);
+
+        try {
+            const response = await fetch('/whisper/api/stt-async', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed');
+
+            sttJobId.textContent = data.job_id;
+            sttProgress.style.width = '33%';
+            pollJobStatus(data.job_id);
+        } catch (error) {
+            sttProcessing.classList.add('hidden');
+            showError(sttError, error.message);
+        }
+    });
+
+    async function pollJobStatus(jobId) {
+        if (pollInterval) clearInterval(pollInterval);
+
+        pollInterval = setInterval(async () => {
+            try {
+                const response = await fetch(`/whisper/api/stt/status/${jobId}`);
+                const data = await response.json();
+
+                if (data.state === 'PROGRESS') {
+                    sttStatus.textContent = 'PROCESSING';
+                    sttStatus.className = 'px-3 py-1 bg-blue-200 text-blue-800 rounded-full text-sm font-semibold';
+                    sttProgress.style.width = '66%';
+                    sttStatusText.textContent = data.status || 'Transcribing audio...';
+                } else if (data.state === 'SUCCESS') {
+                    clearInterval(pollInterval);
+                    sttStatus.textContent = 'SUCCESS';
+                    sttStatus.className = 'px-3 py-1 bg-green-200 text-green-800 rounded-full text-sm font-semibold';
+                    sttProgress.style.width = '100%';
+                    sttStatusText.textContent = 'Transcription complete!';
+
+                    setTimeout(() => {
+                        sttProcessing.classList.add('hidden');
+                        sttLanguage.textContent = data.language.toUpperCase();
+                        sttText.value = data.text;
+                        sttResult.classList.remove('hidden');
+                    }, 1000);
+                } else if (data.state === 'FAILURE') {
+                    clearInterval(pollInterval);
+                    sttProcessing.classList.add('hidden');
+                    showError(sttError, data.error || 'Transcription failed');
+                }
+            } catch (error) {
+                clearInterval(pollInterval);
+                sttProcessing.classList.add('hidden');
+                showError(sttError, 'Status check failed');
+            }
+        }, 2000);
+    }
+
+    // === Translation Tab ===
+    const transSource = document.getElementById('trans-source');
+    const transTarget = document.getElementById('trans-target');
+    const transInput = document.getElementById('trans-input');
+    const transSubmit = document.getElementById('trans-submit');
+    const transLoading = document.getElementById('trans-loading');
+    const transResult = document.getElementById('trans-result');
+    const transOutput = document.getElementById('trans-output');
+    const transError = document.getElementById('trans-error');
+
+    // Populate translation languages
+    transSource.innerHTML += Object.entries(transLangs).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+    transTarget.innerHTML = Object.entries(transLangs).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+
+    document.getElementById('trans-copy').addEventListener('click', () => {
+        navigator.clipboard.writeText(transOutput.value);
+        alert('Translation copied to clipboard!');
+    });
+
+    transSubmit.addEventListener('click', async () => {
+        const text = transInput.value.trim();
+        if (!text) return showError(transError, 'Please enter text to translate');
+
+        hideAll();
+        transLoading.classList.remove('hidden');
+
+        try {
+            const response = await fetch('/whisper/api/translate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    text: text,
+                    source: transSource.value,
+                    target: transTarget.value
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Translation failed');
+
+            transOutput.value = data.translated_text;
+            transResult.classList.remove('hidden');
+        } catch (error) {
+            showError(transError, error.message);
+        } finally {
+            transLoading.classList.add('hidden');
+        }
+    });
+
+    // Utility functions
+    function hideAll() {
+        document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
+    }
+
+    function showError(element, message) {
+        element.textContent = message;
+        element.classList.remove('hidden');
+    }
+    </script>
+</body>
+</html>

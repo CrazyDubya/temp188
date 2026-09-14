@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}TTS History - Whisper{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="mb-8">
+            <a href="/whisper" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                <i class="fas fa-arrow-left"></i> Back to Whisper TTS
+            </a>
+        </div>
+
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-history text-indigo-600"></i> TTS History
+            </h1>
+            <p class="text-gray-600">Recent text-to-speech generations</p>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6">
+            <i class="fas fa-exclamation-circle"></i> Error: {{ error }}
+        </div>
+        {% endif %}
+
+        {% if audio_files %}
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-indigo-600 text-white">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Date/Time</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Text Preview</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Engine</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Voice</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold">Length</th>
+                            <th class="px-6 py-3 text-center text-sm font-semibold">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for file in audio_files %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ file.timestamp | timestamp_to_date }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-800">
+                                {{ file.text[:100] }}{% if file.text|length > 100 %}...{% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-sm">
+                                <span class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs font-medium">
+                                    {{ file.engine.upper() }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ file.voice }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ file.char_count }} chars
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <a
+                                    href="/static/whisper_audio/{{ file.filename }}"
+                                    class="text-green-600 hover:text-green-800 mr-3"
+                                    download
+                                    title="Download"
+                                >
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <button
+                                    onclick="playAudio('/static/whisper_audio/{{ file.filename }}')"
+                                    class="text-indigo-600 hover:text-indigo-800"
+                                    title="Play"
+                                >
+                                    <i class="fas fa-play-circle"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-xl shadow-lg p-12 text-center">
+            <div class="text-6xl text-gray-300 mb-4">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No History Yet</h3>
+            <p class="text-gray-500 mb-6">Generate your first text-to-speech to see it here!</p>
+            <a
+                href="/whisper"
+                class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
+            >
+                <i class="fas fa-magic"></i> Generate Speech
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Audio Player Modal -->
+        <div id="audio-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">
+                        <i class="fas fa-headphones"></i> Audio Player
+                    </h3>
+                    <button onclick="closeAudioModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <audio id="modal-audio" controls class="w-full">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function playAudio(url) {
+    const modal = document.getElementById('audio-modal');
+    const audio = document.getElementById('modal-audio');
+    audio.src = url;
+    modal.classList.remove('hidden');
+    audio.play();
+}
+
+function closeAudioModal() {
+    const modal = document.getElementById('audio-modal');
+    const audio = document.getElementById('modal-audio');
+    audio.pause();
+    audio.src = '';
+    modal.classList.add('hidden');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}About - Whisper TTS{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="mb-8">
+            <a href="/whisper" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                <i class="fas fa-arrow-left"></i> Back to Whisper TTS
+            </a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-6">
+                <i class="fas fa-info-circle text-indigo-600"></i> About Whisper TTS
+            </h1>
+
+            <div class="prose prose-lg max-w-none">
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">What is Whisper TTS?</h2>
+                <p class="text-gray-700 mb-4">
+                    Whisper TTS is a powerful text-to-speech service that converts your written text into natural-sounding speech.
+                    Whether you need voiceovers, accessibility features, or just want to hear your text read aloud, Whisper TTS
+                    provides high-quality audio generation in multiple languages and voices.
+                </p>
+
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Features</h2>
+                <ul class="list-disc list-inside text-gray-700 space-y-2 mb-6">
+                    <li><strong>Multiple TTS Engines:</strong> Choose between Google TTS (gTTS) for speed or Microsoft Edge TTS for quality</li>
+                    <li><strong>12+ Languages:</strong> Support for English, Spanish, French, German, Italian, Portuguese, Russian, Japanese, Korean, Chinese, Arabic, and Hindi</li>
+                    <li><strong>Voice Selection:</strong> Male and female voices with various accents and styles</li>
+                    <li><strong>Speed Control:</strong> Adjust speech rate from 0.5x (slow) to 2.0x (fast)</li>
+                    <li><strong>Instant Generation:</strong> Get your audio file in seconds</li>
+                    <li><strong>Downloadable MP3:</strong> Download and save your generated speech</li>
+                    <li><strong>Character Limit:</strong> Process up to 3000 characters per generation</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">TTS Engines</h2>
+
+                <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Google TTS (gTTS)</h3>
+                <p class="text-gray-700 mb-4">
+                    Fast and reliable text-to-speech powered by Google Translate's TTS API. Ideal for quick generations
+                    and when speed is a priority. Supports a wide range of languages with good quality output.
+                </p>
+
+                <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Microsoft Edge TTS</h3>
+                <p class="text-gray-700 mb-4">
+                    Premium neural voices from Microsoft Edge browser. Provides exceptionally natural-sounding speech
+                    with human-like intonation and emotion. Offers multiple voice options per language including
+                    male and female voices with various accents.
+                </p>
+
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Use Cases</h2>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-indigo-50 p-6 rounded-lg">
+                        <h4 class="font-semibold text-indigo-900 mb-2"><i class="fas fa-book-reader"></i> Content Creation</h4>
+                        <p class="text-gray-700 text-sm">Generate voiceovers for videos, podcasts, and presentations</p>
+                    </div>
+                    <div class="bg-purple-50 p-6 rounded-lg">
+                        <h4 class="font-semibold text-purple-900 mb-2"><i class="fas fa-universal-access"></i> Accessibility</h4>
+                        <p class="text-gray-700 text-sm">Make content accessible for visually impaired users</p>
+                    </div>
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                        <h4 class="font-semibold text-blue-900 mb-2"><i class="fas fa-graduation-cap"></i> Learning</h4>
+                        <p class="text-gray-700 text-sm">Help with language learning and pronunciation</p>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-lg">
+                        <h4 class="font-semibold text-green-900 mb-2"><i class="fas fa-robot"></i> Automation</h4>
+                        <p class="text-gray-700 text-sm">Create automated voice notifications and announcements</p>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Privacy & Data</h2>
+                <p class="text-gray-700 mb-4">
+                    Generated audio files are automatically cleaned up after 24 hours. We do not permanently store
+                    your text or audio files. Your privacy is important to us.
+                </p>
+
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Technical Details</h2>
+                <ul class="list-disc list-inside text-gray-700 space-y-2 mb-6">
+                    <li><strong>Audio Format:</strong> MP3 (compressed, web-compatible)</li>
+                    <li><strong>Sample Rate:</strong> Varies by engine (typically 24kHz or 44.1kHz)</li>
+                    <li><strong>Processing Time:</strong> 2-5 seconds for most texts</li>
+                    <li><strong>File Size:</strong> Approximately 1-2MB per minute of audio</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Get Started</h2>
+                <p class="text-gray-700 mb-6">
+                    Ready to convert your text to speech? Head over to the main page and start generating!
+                </p>
+
+                <div class="text-center">
+                    <a
+                        href="/whisper"
+                        class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200"
+                    >
+                        <i class="fas fa-magic"></i> Try Whisper TTS Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-600 text-sm">
+            <p>Part of the <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium">temp188.com</a> platform</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
